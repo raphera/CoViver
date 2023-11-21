@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+
+# Arquivos de configuração e logs
+.env
+*.log
+
+# MacOS
+.DS_Store
+
+# Diretórios de build
+dist/
+build/
+out/
+
+# Editores e IDEs
+.vscode/
+.idea/
+
+# Arquivos de cache
+.cache/
+*.tmp
+*.temp
