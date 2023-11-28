@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 
 exports.createUser = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users1']
     try {
         const { name, email, password } = req.body;
 
@@ -28,15 +27,47 @@ exports.createUser = async (req: Request, res: Response) => {
 
 
 exports.getUser = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Users']
     try {
         const user = await db('Users').where({ user_id: req.params.id }).first();
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
         }
-        res.status(200).json(user);
+
+        const { password_hash, ...userWithoutPassword } = user;
+
+        res.status(200).json(userWithoutPassword);
     } catch (error) {
         if (error instanceof Error)
             res.status(400).json({ error: error.message });
     }
 };
+
+exports.getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await db('Users').select('*').whereNot('password_hash', null).orderBy('name');
+
+        const usersWithoutPassword = users.map(user => {
+            const { password_hash, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        });
+
+        res.status(200).json(usersWithoutPassword);
+    } catch (error) {
+        if (error instanceof Error)
+            res.status(400).json({ error: error.message });
+    }
+}
+
+exports.deleteUser = async (req: Request, res: Response) => {
+    try {
+        const user = await db('Users').where({ user_id: req.params.id }).first();
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+        await db('Users').where({ user_id: req.params.id }).delete();
+        res.status(204).send();
+    } catch (error) {
+        if (error instanceof Error)
+            res.status(400).json({ error: error.message });
+    }
+}
