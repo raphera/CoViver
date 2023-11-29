@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import db from '../database';
+import { UserForTokenModel } from '../models/UserForTokenModel';
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -27,7 +28,7 @@ export const login = async (req: Request, res: Response) => {
             throw new Error('Secret key is empty');
         }
 
-        const userForToken = {
+        const userForToken: UserForTokenModel = {
             user_id: user.user_id,
             name: user.name,
             email: user.email,
@@ -58,9 +59,11 @@ export const refresh = async (req: Request, res: Response) => {
             throw new Error('Secret key is empty');
         }
 
-        const user = jwt.verify(token, secretKey) as jwt.JwtPayload;
+        const user = jwt.verify(token, secretKey) as jwt.JwtPayload & UserForTokenModel;
+
         delete user.exp;
         delete user.iat;
+
         const newAccessToken = jwt.sign(user, secretKey, { expiresIn: '15m' });
         const newRefreshToken = jwt.sign(user, secretKey, { expiresIn: '7d' });
 

@@ -1,7 +1,7 @@
-export default class User{
-  user_id: number = 0;
-  name: string = "";
-  email: string = "";
-  password_hash: string = "";
+export interface UserModel {
+  user_id: number;
+  name: string;
+  email: string;
+  password_hash: string;
   google_id?: string;
 }

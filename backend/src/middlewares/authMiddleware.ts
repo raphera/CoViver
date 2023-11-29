@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { UserForTokenModel } from '../models/UserForTokenModel';
 
 interface RequestWithUser extends Request {
-  user?: any;
+  user?: UserForTokenModel;
 }
 
 const secretKey = process.env.SECRET_KEY;
