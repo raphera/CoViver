@@ -2,40 +2,33 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          Quasar App
+          CoViver
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn-dropdown flat round unelevated>
+          <template v-slot:label>
+            <q-icon name="account_circle" size="2em" class="q-mr-sm" />
+            <span>{{ abbreviatedName }}</span>
+          </template>
+          <q-list style="min-width: 100px" content-style="width: auto">
+            <q-item clickable v-close-popup @click="logout">
+              <q-item-section>Logout</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label
-          header
-        >
+        <q-item-label header>
           Essential Links
         </q-item-label>
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
       </q-list>
     </q-drawer>
 
@@ -46,8 +39,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
+import { useAuthStore } from 'src/stores/auth-store';
+import { useRouter } from 'vue-router';
 
 const linksList = [
   {
@@ -101,15 +96,32 @@ export default defineComponent({
     EssentialLink
   },
 
-  setup () {
+  setup() {
     const leftDrawerOpen = ref(false)
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const userName = computed(() => authStore.tokenData?.name);
+
+    const logout = async () => {
+      await authStore.logout();
+      router.push('/login');
+    };
+
+    const abbreviatedName = computed(() => {
+      if (!userName.value) return '';
+      const parts = userName.value.split(' ');
+      if (parts.length === 1) return parts[0];
+      return `${parts[0]} ${parts[1].charAt(0)}.`;
+    });
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
-      toggleLeftDrawer () {
+      toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      abbreviatedName,
+      logout
     }
   }
 });

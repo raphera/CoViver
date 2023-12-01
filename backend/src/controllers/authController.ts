@@ -77,17 +77,17 @@ export const refresh = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-    const { token } = req.body;
+    const { refreshToken } = req.body;
 
-    if (!token) {
+    if (!refreshToken) {
         return res.status(400).json({ message: 'Token is required' });
     }
 
-    if (!(token in refreshTokens)) {
+    if (!(refreshToken in refreshTokens)) {
         return res.status(403).json({ message: 'Invalid token' });
     }
 
-    delete refreshTokens[token];
+    delete refreshTokens[refreshToken];
 
     res.json({ message: 'Logged out successfully' });
 };

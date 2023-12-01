@@ -12,9 +12,15 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true
         }
-      },
+      }
+    ],
+  },
+  {
+    path: '/login',
+    component: () => import('layouts/CleanLayout.vue'),
+    children: [
       {
-        path: '/login',
+        path: '',
         component: () => import('pages/LoginPage.vue'),
         name: 'Login'
       },
