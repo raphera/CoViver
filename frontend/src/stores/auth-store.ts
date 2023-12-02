@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
 import { jwtDecode } from 'jwt-decode';
 import { UserForTokenModel } from './../../../backend/src/models/UserForTokenModel'
+import { AxiosError } from 'axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -46,7 +47,15 @@ export const useAuthStore = defineStore('auth', {
       this.updateToken({ accessToken: data.accessToken, refreshToken: data.refreshToken });
     },
     async logout() {
-      await api.post('/api/auth/logout', { refreshToken: this.refreshToken });
+      try {
+        await api.post('/api/auth/logout', { refreshToken: this.refreshToken });
+      } catch (error) {
+        if (error instanceof AxiosError && error.response && error.response.status === 403 && error.response.data.message === 'Invalid token') {
+          this.removeToken();
+          return;
+        }
+      }
+
       this.removeToken();
     },
     async getFreshTokens() {
