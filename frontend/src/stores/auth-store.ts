@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { UserForTokenModel } from './../../../backend/src/models/UserForTokenModel'
 import { AxiosError } from 'axios';
+import { useSystemMessagesStore } from './system-messages-store';
+import { MessageLevel } from 'src/models/MessageModel';
+import { is } from 'quasar';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -18,9 +21,25 @@ export const useAuthStore = defineStore('auth', {
         }
       }
       return null;
-    })() as UserForTokenModel | null
+    })() as UserForTokenModel & JwtPayload | null
   }),
   actions: {
+    isLoggedIn() {
+      return !!this.accessToken && !!this.refreshToken;
+    },
+
+    getAccessToken() {
+      if (!this.isLoggedIn()) {
+        return null;
+      }
+
+      if (this.tokenData && this.tokenData.exp && this.tokenData.exp * 1000 < Date.now()) {
+        this.getFreshTokens();
+      }
+
+      return this.accessToken;
+    },
+
     updateToken({ accessToken, refreshToken }: { accessToken: string, refreshToken: string }) {
       this.accessToken = accessToken;
       this.refreshToken = refreshToken;
@@ -43,8 +62,26 @@ export const useAuthStore = defineStore('auth', {
       this.tokenData = null;
     },
     async login(credentials: { email: string, password: string }) {
-      const { data } = await api.post('/api/auth/login', credentials);
-      this.updateToken({ accessToken: data.accessToken, refreshToken: data.refreshToken });
+      try {
+        const { data } = await api.post('/api/auth/login', credentials);
+        this.updateToken({ accessToken: data.accessToken, refreshToken: data.refreshToken });
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          if (error.response) {
+            switch (error.response.status) {
+              case 401:
+                useSystemMessagesStore().addMessage({ level: MessageLevel.Error, text: 'Credenciais inválidas', details: error.response.data });
+                break;
+              case 404:
+                useSystemMessagesStore().addMessage({ level: MessageLevel.Error, text: 'Usuário não encontrado', details: error.response.data });
+                break;
+            }
+          } else if (error instanceof Error) {
+            useSystemMessagesStore().addMessage({ level: MessageLevel.Error, text: 'Erro não esperado', details: JSON.stringify(error.toJSON()) });
+          }
+          throw error;
+        }
+      }
     },
     async logout() {
       try {
@@ -57,6 +94,8 @@ export const useAuthStore = defineStore('auth', {
       }
 
       this.removeToken();
+
+      useSystemMessagesStore().addMessage({ level: MessageLevel.Info, text: 'Logout realizado com sucesso' });
     },
     async getFreshTokens() {
       const { data } = await api.post('/api/auth/refresh', { token: this.getFreshTokens });

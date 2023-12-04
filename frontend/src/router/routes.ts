@@ -8,9 +8,27 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('pages/IndexPage.vue'),
-        name: 'Home',
+        name: 'Inicio',
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
+          showInDrawer: true,
+          icon: 'home'
+        }
+      }
+    ],
+  },
+  {
+    path: '/accounts',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AccountsPage.vue'),
+        name: 'Contas',
+        meta: {
+          requiresAuth: true,
+          showInDrawer: true,
+          icon: 'account_balance'
         }
       }
     ],

@@ -5,6 +5,7 @@ const swaggerDocument = require('./swaggerOutput.json');
 
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const accountRoutes = require('./routes/accountRoutes');
 
 const app = express();
 
@@ -16,6 +17,10 @@ app.use('/api', userRoutes
 
 app.use('/api', authRoutes
   // #swagger.tags = ['Auth']
+);
+
+app.use('/api', accountRoutes
+  // #swagger.tags = ['Account']
 );
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

@@ -1,21 +1,21 @@
-const express = require('express');
+import express from 'express';
+import { createUser, deleteUser, getUser, getUsers } from '../controllers/userController';
+import { authenticateToken } from '../middlewares/authMiddleware';
+
 const router = express.Router();
-const userController = require('../controllers/userController');
-const { authenticateToken } = require('../middlewares/authMiddleware');
 
-router.post('/users', authenticateToken, userController.createUser
+router.post('/users', createUser
+);
+
+router.get('/users/:id', authenticateToken, getUser
     // #swagger.security = [{'Bearer': []}]
 );
 
-router.get('/users/:id', authenticateToken, userController.getUser
+router.get('/users', authenticateToken, getUsers
     // #swagger.security = [{'Bearer': []}]
 );
 
-router.get('/users', authenticateToken, userController.getUsers
-    // #swagger.security = [{'Bearer': []}]
-);
-
-router.delete('/users/:id', authenticateToken, userController.deleteUser
+router.delete('/users/:id', authenticateToken, deleteUser
     // #swagger.security = [{'Bearer': []}]
 );
 

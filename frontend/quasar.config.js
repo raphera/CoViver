@@ -92,11 +92,12 @@ module.exports = configure(function (/* ctx */) {
       proxy: {
         // todas as requisições para /api serão redirecionadas para o seu servidor de backend
         '/api': {
-          target: 'http://localhost:3000', // substitua por sua URL de backend
+          target: 'http://127.0.0.1:3000', // substitua por sua URL de backend
           changeOrigin: true,
-          pathRewrite: {
-            '^/api': ''
-          }
+          // pathRewrite: {
+          //   '^/api': ''
+          // },
+
         }
       }
     },
@@ -143,12 +144,16 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Loading',
+        'Notify',
+        'Dialog'
+      ]
     },
 
-    // animations: 'all', // --- includes all animations
+    animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: [],
+    // animations: [],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#sourcefiles
     // sourceFiles: {

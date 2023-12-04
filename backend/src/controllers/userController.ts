@@ -2,7 +2,7 @@ import db from '../database';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 
-exports.createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response) => {
     try {
         const { name, email, password } = req.body;
 
@@ -26,7 +26,7 @@ exports.createUser = async (req: Request, res: Response) => {
 };
 
 
-exports.getUser = async (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
     try {
         const user = await db('Users').where({ user_id: req.params.id }).first();
         if (!user) {
@@ -42,7 +42,7 @@ exports.getUser = async (req: Request, res: Response) => {
     }
 };
 
-exports.getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await db('Users').select('*').whereNot('password_hash', null).orderBy('name');
 
@@ -58,7 +58,7 @@ exports.getUsers = async (req: Request, res: Response) => {
     }
 }
 
-exports.deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
     try {
         const user = await db('Users').where({ user_id: req.params.id }).first();
         if (!user) {
