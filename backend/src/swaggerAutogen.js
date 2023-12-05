@@ -6,7 +6,6 @@ const doc = {
         version: '1.0.0',
         description: 'Documentação da API do CoViver',
     },
-    host: 'localhost:3000',
     schemes: ['http'],
     securityDefinitions: {
         Bearer: {
