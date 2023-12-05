@@ -6,7 +6,7 @@ COPY frontend/package*.json ./
 RUN npm install
 
 COPY frontend/ .
-RUN npm install
+RUN npm run build
 
 # Etapa de build do backend
 FROM node:18 as build-backend
