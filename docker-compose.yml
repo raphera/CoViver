@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  coviver-db:
+    env_file:
+      - db.env
+    image: mysql:8.0.35
+    ports:
+      - "4306:3306"
+    volumes:
+      - coviver-db-data:/var/lib/mysql
+      - ./db/db_coviver.sql:/docker-entrypoint-initdb.d/db_coviver.sql
+
+  coviver-backend:
+    env_file:
+      - backend.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - coviver-db
+
+volumes:
+  coviver-db-data:

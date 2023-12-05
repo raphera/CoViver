@@ -2,6 +2,7 @@ require('dotenv').config();
 import express from 'express';
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swaggerOutput.json');
+const path = require('path');
 
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -24,6 +25,20 @@ app.use('/api', accountRoutes
 );
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+if (process.env.NODE_ENV === 'production') {
+  const staticFilesPath = path.join(__dirname, './public');
+  app.use(express.static(staticFilesPath));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(staticFilesPath, 'index.html'));
+  });
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  const cors = require('cors');
+  app.use(cors());
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

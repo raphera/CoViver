@@ -163,6 +163,12 @@ CREATE TABLE IF NOT EXISTS `db_coviver`.`Transaction_Users` (
     CONSTRAINT `fk_Transaction_Users_Users` FOREIGN KEY (`user_id`) REFERENCES `db_coviver`.`Users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Conceder permissões ao usuário coviver_admin
+-- -----------------------------------------------------
+GRANT ALL PRIVILEGES ON `db_coviver`.* TO 'coviver_admin'@'%';
+FLUSH PRIVILEGES;
+
 SET SQL_MODE = @OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
