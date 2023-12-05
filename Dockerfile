@@ -1,14 +1,22 @@
 # Etapa de build do frontend
 FROM node:18 as build-frontend
 WORKDIR /app
+
+COPY frontend/package*.json ./
+RUN npm install
+
 COPY frontend/ .
-RUN npm install && npm run build
+RUN npm install
 
 # Etapa de build do backend
 FROM node:18 as build-backend
 WORKDIR /app
+
+COPY backend/package*.json ./
+RUN npm install
+
 COPY backend/ .
-RUN npm install && npm run prebuild && npm run build
+RUN npm run build
 RUN node ./src/swaggerAutogen.js
 
 # Etapa de produção
